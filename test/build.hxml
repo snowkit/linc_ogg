@@ -2,6 +2,8 @@
 -cpp cpp/
 -cp ../
 -D no-debug
+-D no-simplify
+-resource sound.ogg@sound.ogg
 -cmd cpp/Test
 
 # pick a target
