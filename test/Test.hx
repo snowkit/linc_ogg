@@ -40,6 +40,12 @@ class Test {
             trace('  ' + c);
         }
 
+        //bytes_read = ov_read(&vf, buffer, 4096,0,2,1,&current_section)
+        var buffer = haxe.io.Bytes.alloc(1024);
+        var bytes_read = Ogg.ov_read(file, buffer.getData(), 1024, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
+
+        trace('read: ' + code(bytes_read));
+
         trace('clear: ' + code(Ogg.ov_clear(file)));
 
     }

@@ -10,8 +10,11 @@ namespace linc {
 
     namespace ogg {
 
-        extern ::cpp::Pointer<OggVorbis_File> newOggVorbisFile();
-        extern Dynamic ov_comment(::cpp::Pointer<OggVorbis_File> vf, int link);
+        typedef ::cpp::Pointer<OggVorbis_File> OggFile;
+
+        extern OggFile newOggVorbisFile();
+        extern Dynamic ov_comment(OggFile vf, int link);
+        extern int ov_read(OggFile vf, Array<unsigned char> buffer, int length, int bigendianp, int word, int sgned);
 
     } //ogg namespace
 

@@ -14,8 +14,8 @@ extern class Ogg {
     //:todo: static function ov_test_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
 
     //ret long, ,int *bitstream at the end is left
-    // @:native('linc::ogg::ov_read')
-    //:todo: static function ov_read(vf:OggVorbisFile, buffer:BytesData, length:Int, bigendianp:Int, word:Int, sgned:Int) : Int;
+    @:native('linc::ogg::ov_read')
+    static function ov_read(vf:OggVorbisFile, buffer:BytesData, length:Int, endian:OggEndian, word:OggWord, sgned:OggSigned) : Int;
 
     @:native('linc::ogg::newOggVorbisFile')
     static function newOggVorbisFile() : OggVorbisFile;
@@ -131,6 +131,28 @@ typedef VorbisComment = {
     vendor:String,
     comments:Array<String>
 }
+
+@:enum
+abstract OggWord(Int) from Int to Int {
+    var TYPICAL = 2;
+    var OGG_8_BIT = 1;
+    var OGG_16_BIT = 2;
+}
+
+@:enum
+abstract OggSigned(Int) from Int to Int {
+    var TYPICAL = 1;
+    var OGG_UNSIGNED = 0;
+    var OGG_SIGNED = 1;
+}
+
+@:enum
+abstract OggEndian(Int) from Int to Int {
+    var TYPICAL = 0;
+    var OGG_L_ENDIAN = 0;
+    var OGG_B_ENDIAN = 1;
+}
+
 
 @:enum
 abstract OggCode(Int) from Int to Int {

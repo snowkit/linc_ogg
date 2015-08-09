@@ -6,13 +6,13 @@ namespace linc {
 
     namespace ogg {
 
-        ::cpp::Pointer<OggVorbis_File> newOggVorbisFile() {
+        OggFile newOggVorbisFile() {
 
-            return cpp::Pointer<OggVorbis_File>( new OggVorbis_File() );
+            return OggFile( new OggVorbis_File() );
 
         } //newOggVorbisFile
 
-        Dynamic ov_comment(::cpp::Pointer<OggVorbis_File> vf, int link) {
+        Dynamic ov_comment(OggFile vf, int link) {
 
             vorbis_comment* src_comment = ov_comment(vf.get_raw(), -1);
 
@@ -35,6 +35,15 @@ namespace linc {
             return null();
 
         } //ov_comment
+
+        int ov_read(OggFile vf, Array<unsigned char> buffer, int length, int bigendianp, int word, int sgned) {
+
+            //:todo: this value isn't returned yet but is only used for higher order sounds (multiple streams)
+            int bitstream = -1;
+            long _read = ov_read(vf.get_raw(), (char*)&buffer[0], length, bigendianp, word, sgned, &bitstream);
+            return (int)_read;
+
+        } //ov_read
 
     } //ogg namespace
 
