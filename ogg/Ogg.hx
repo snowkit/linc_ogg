@@ -13,6 +13,8 @@ import haxe.io.BytesData;
 extern class Ogg {
 
     //:todo: static function ov_open_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
+    @:native('linc::ogg::ov_open_callbacks')
+    static function ov_open_callbacks(src:BytesData, file:OggVorbisFile, initial:BytesData, ibytes:Int, callbacks:OggCallbacks) : Int;
 
     //ret long, ,int *bitstream at the end is left
     @:native('linc::ogg::ov_read')
@@ -112,6 +114,22 @@ extern class Ogg {
 
 } //Ogg
 
+//userdata,size,nmemb,data
+typedef OggReadFN = Dynamic->Int->Int->BytesData->Int;
+//userdata,offset,whence
+typedef OggSeekFN = Dynamic->haxe.Int64->OggWhence->Int;
+//userdata
+typedef OggCloseFN = Dynamic->Int;
+//userdata
+typedef OggTellFN = Dynamic->Int;
+
+typedef OggCallbacks = {
+    var read_fn: OggReadFN;
+    var seek_fn: OggSeekFN;
+    var close_fn: OggCloseFN;
+    var tell_fn: OggTellFN;
+}
+
 @:include('linc_ogg.h')
 @:native('OggVorbis_File')
 private extern class EOggVorbisFile {}
@@ -132,6 +150,13 @@ extern class VorbisInfo {
 typedef VorbisComment = {
     vendor:String,
     comments:Array<String>
+}
+
+@:enum
+abstract OggWhence(Int) from Int to Int {
+    var OGG_SEEK_SET = 0;
+    var OGG_SEEK_CUR = 1;
+    var OGG_SEEK_END = 2;
 }
 
 @:enum
