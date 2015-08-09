@@ -128,7 +128,6 @@ extern class VorbisInfo {
     var bitrate_lower:Int;
     var bitrate_window:Int;
 }
-// typedef VorbisInfo = cpp.Pointer<EVorbisInfo>;
 
 typedef VorbisComment = {
     vendor:String,
