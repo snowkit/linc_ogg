@@ -1,0 +1,9 @@
+[submodule "lib/ogg"]
+	path = lib/ogg
+	url = https://github.com/native-toolkit/ogg.git
+[submodule "lib/vorbis"]
+	path = lib/vorbis
+	url = https://github.com/native-toolkit/vorbis.git
+[submodule "lib/theora"]
+	path = lib/theora
+	url = https://github.com/native-toolkit/theora.git
