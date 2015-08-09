@@ -2,19 +2,20 @@ package ogg;
 
 import haxe.io.BytesData;
 
+//:notes:
+//  :skipped: functions are unfitting to haxe workflow, but could be exposed still
+
 @:keep
 @:include('linc_ogg.h')
 @:build(linc.Touch.apply())
 extern class Ogg {
 
-    //:todo: static function ov_open(FILE *f, vf:OggVorbisFile, ibytes:Int) : Int; //ibytes=long
-    //:todo: static function ov_test(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes) : Int;
-
     //:todo: static function ov_open_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
     //:todo: static function ov_test_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
 
+    //ret long, ,int *bitstream at the end is left
     // @:native('linc::ogg::ov_read')
-    //:todo: static function ov_read(vf:OggVorbisFile, buffer:BytesData, length:Int, bigendianp:Int,word:Int,sgned:Int) : Int; //ret long, ,int *bitstream at the end is left
+    //:todo: static function ov_read(vf:OggVorbisFile, buffer:BytesData, length:Int, bigendianp:Int, word:Int, sgned:Int) : Int;
 
     @:native('linc::ogg::newOggVorbisFile')
     static function newOggVorbisFile() : OggVorbisFile;
@@ -103,6 +104,8 @@ extern class Ogg {
     @:native('ov_time_seek_page_lap')
     static function ov_time_seek_page_lap(vf:OggVorbisFile, pos:Float) : OggCode; //pos double
 
+    //:skipped: static function ov_open(FILE *f, vf:OggVorbisFile, ibytes:Int) : Int; //ibytes=long
+    //:skipped: static function ov_test(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes) : Int;
 
 } //Ogg
 
