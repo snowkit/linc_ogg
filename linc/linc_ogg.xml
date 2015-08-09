@@ -1,0 +1,34 @@
+<xml>
+
+    <set name='LINC_OGG_PATH' value='${haxelib:linc_ogg}'/>
+
+    <set name="NATIVE_TOOLKIT_PATH" value="${LINC_OGG_PATH}/lib/" />
+    <include name="${LINC_OGG_PATH}/lib/ogg/files.xml"/>
+    <include name="${LINC_OGG_PATH}/lib/vorbis/files.xml"/>
+    <include name="${LINC_OGG_PATH}/lib/theora/files.xml"/>
+
+    <files id='haxe'>
+        <compilerflag value='-I${LINC_OGG_PATH}/lib/'/>
+        <compilerflag value='-I${LINC_OGG_PATH}/linc/'/>
+
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/ogg/include/"/>
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/vorbis/include/"/>
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/theora/include/"/>
+
+        <include name="${LINC_OGG_PATH}/lib/ogg/defines.xml"/>
+        <include name="${LINC_OGG_PATH}/lib/vorbis/defines.xml"/>
+        <include name="${LINC_OGG_PATH}/lib/theora/defines.xml"/>
+
+        <file name='${LINC_OGG_PATH}/linc/linc_ogg.cpp' />
+    </files>
+
+    <target id="haxe">
+
+            <!-- include sdl library code into the build -->
+        <files id="native-toolkit-ogg"/>
+        <files id="native-toolkit-vorbis"/>
+        <files id="native-toolkit-theora"/>
+
+    </target>
+
+</xml>
