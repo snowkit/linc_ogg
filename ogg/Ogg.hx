@@ -3,7 +3,9 @@ package ogg;
 import haxe.io.BytesData;
 
 //:notes:
-//  :skipped: functions are unfitting to haxe workflow, but could be exposed still
+//  :skipped: functions are unfitting to haxe workflow
+//  :future: functions that are tertiary
+//  :todo: functions that are needed to be exposed
 
 @:keep
 @:include('linc_ogg.h')
@@ -11,7 +13,6 @@ import haxe.io.BytesData;
 extern class Ogg {
 
     //:todo: static function ov_open_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
-    //:todo: static function ov_test_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
 
     //ret long, ,int *bitstream at the end is left
     @:native('linc::ogg::ov_read')
@@ -31,9 +32,6 @@ extern class Ogg {
 
     @:native('linc::ogg::ov_comment')
     static function ov_comment(vf:OggVorbisFile,link:Int) : VorbisComment;
-
-    @:native('ov_test_open')
-    static function ov_test_open(vf:OggVorbisFile) : OggCode;
 
     @:native('ov_bitrate')
     static function ov_bitrate(vf:OggVorbisFile,i:Int) : Int; //ret long
@@ -104,8 +102,13 @@ extern class Ogg {
     @:native('ov_time_seek_page_lap')
     static function ov_time_seek_page_lap(vf:OggVorbisFile, pos:Float) : OggCode; //pos double
 
+    //:future: long ov_read_filter(OggVorbis_File *vf, char *buffer, int length, int bigendianp, int word, int sgned, int *bitstream, void (*filter)(float **pcm,long channels,long samples,void *filter_param),void *filter_param);
+    //:future: long ov_read_float(OggVorbis_File *vf, float ***pcm_channels, int samples, int *bitstream);
+
     //:skipped: static function ov_open(FILE *f, vf:OggVorbisFile, ibytes:Int) : Int; //ibytes=long
     //:skipped: static function ov_test(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes) : Int;
+    //:skipped: static function ov_test_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
+    //:skipped: @:native('ov_test_open') static function ov_test_open(vf:OggVorbisFile) : OggCode;
 
 } //Ogg
 
