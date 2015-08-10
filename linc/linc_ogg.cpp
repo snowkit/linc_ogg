@@ -45,7 +45,7 @@ namespace linc {
 
         } //ov_read
 
-        int ov_open_callbacks(int callback_id, OggFile vf, OggBytesData initial, int ibytes) {
+        int internal_open_callbacks(int cb_id, OggFile vf, OggBytesData initial, int ibytes) {
 
             ov_callbacks cb = ov_callbacks();
 
@@ -55,12 +55,16 @@ namespace linc {
                 cb.tell_func = &ogg_tell_func;
 
             int* int_id = new int;
-            *int_id = callback_id;
+            *int_id = cb_id;
 
-            return ov_open_callbacks(int_id, vf.get_raw(), (char*)&initial[0], ibytes, cb);
+            if(initial == null()) {
+                printf("%s %d\n", "opening ogg file for callback id", cb_id);
+                return ov_open_callbacks(int_id, vf.get_raw(), NULL, 0, cb);
+            } else {
+                return ov_open_callbacks(int_id, vf.get_raw(), (char*)&initial[0], ibytes, cb);
+            }
 
         } //ov_open_callbacks
-
 
         //internal
 
@@ -79,6 +83,9 @@ namespace linc {
 
                 if(inited_callbacks) return;
 
+                printf("%s\n", "inited internal callbacks");
+                printf("has read:%d seek:%d close:%d tell:%d\n", _read_fn!=null(),_seek_fn!=null(),_close_fn!=null(),_tell_fn!=null());
+
                 read_fn = _read_fn;
                 seek_fn = _seek_fn;
                 close_fn = _close_fn;
@@ -90,41 +97,50 @@ namespace linc {
 
             static size_t ogg_read_func(void* ptr, size_t size, size_t nmemb, void* userdata) {
 
-                int* cbid = (int*)userdata;
+                int* cb_id = (int*)userdata;
 
-                // read_fn(*cbid, );
+                Array<char> arr = hx::ArrayBase::__new(0,0);
+                arr->setUnmanagedData(ptr, size);
 
-                return -1;
+                int res = read_fn(*cb_id, (int)size, (int)nmemb, arr);
+
+                printf("%s %d\n", "internal read callback:", *cb_id);
+
+                arr = null();
+
+                return res;
 
             } //read_func
 
             static int ogg_seek_func(void* userdata, ogg_int64_t offset, int whence) {
 
-                int* cbid = (int*)userdata;
+                int* cb_id = (int*)userdata;
 
-                // seek_fn(*cbid, );
+                printf("%s cb_id:%d offset:%lld whence:%d\n", "seek", *cb_id, offset, whence);
 
-                return -1;
+                if(seek_fn == null()) printf("%s\n", "why is seek_fn null?");
+
+                return seek_fn(*cb_id, (int)offset, whence);
 
             } //seek_func
 
             static int ogg_close_func(void* userdata) {
 
-                int* cbid = (int*)userdata;
+                int* cb_id = (int*)userdata;
 
-                // close_fn(*cbid, );
+                printf("%s %d\n", "close", *cb_id);
 
-                return -1;
+                return close_fn(*cb_id);
 
             } //close_func
 
             static long ogg_tell_func(void* userdata) {
 
-                int* cbid = (int*)userdata;
+                int* cb_id = (int*)userdata;
 
-                // tell_fn(*cbid, );
+                printf("%s %d\n", "tell", *cb_id);
 
-                return -1;
+                return tell_fn(*cb_id);
 
             } //tell_func
 

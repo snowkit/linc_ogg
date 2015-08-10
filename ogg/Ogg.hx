@@ -12,9 +12,9 @@ import haxe.io.BytesData;
 @:build(linc.Touch.apply())
 extern class Ogg {
 
-    //:todo: static function ov_open_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
-    @:native('linc::ogg::ov_open_callbacks')
-    static function ov_open_callbacks(src:BytesData, file:OggVorbisFile, initial:BytesData, ibytes:Int, callbacks:OggCallbacks) : Int;
+    static inline function ov_open_callbacks(userdata:Dynamic, file:OggVorbisFile, initial:BytesData, ibytes:Int, callbacks:OggCallbacks) : Int {
+        return Ogg_helper.ov_open_callbacks(userdata, file, initial, ibytes, callbacks);
+    }
 
     //ret long, ,int *bitstream at the end is left
     @:native('linc::ogg::ov_read')
@@ -112,14 +112,115 @@ extern class Ogg {
     //:skipped: static function ov_test_callbacks(void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks) : Int;
     //:skipped: @:native('ov_test_open') static function ov_test_open(vf:OggVorbisFile) : OggCode;
 
+    //internal
+    @:native('linc::ogg::init_callbacks')
+    private static function init_callbacks(
+        read_fn:cpp.Callable<Int->Int->Int->BytesData->Int>,
+        seek_fn:cpp.Callable<Int->Int->OggWhence->Int>,
+        close_fn:cpp.Callable<Int->Int>,
+        tell_fn:cpp.Callable<Int->Int>
+    ):Void;
+
+    @:native('linc::ogg::internal_open_callbacks')
+    private static function internal_open_callbacks(id:Int, vf:OggVorbisFile, initial:BytesData, ibytes:Int):Int;
+
 } //Ogg
+
+@:allow(ogg.Ogg)
+private class Ogg_helper {
+
+    static var callbacks_set = false;
+    static var callbacks:Map<Int, InternalCallbackInfo> = new Map();
+    static var cb_seq = 0;
+
+    static function ov_open_callbacks(userdata:Dynamic, file:OggVorbisFile, initial:BytesData, ibytes:Int, _callbacks:OggCallbacks) : Int {
+
+        if(!callbacks_set) {
+            @:privateAccess Ogg.init_callbacks(
+                cpp.Callable.fromStaticFunction(read_callback),
+                cpp.Callable.fromStaticFunction(seek_callback),
+                cpp.Callable.fromStaticFunction(close_callback),
+                cpp.Callable.fromStaticFunction(tell_callback)
+            );
+        }
+
+        callbacks.set(cb_seq, { userdata:userdata, file:file, callbacks:_callbacks, id:++cb_seq });
+
+        return @:privateAccess Ogg.internal_open_callbacks(cb_seq, file, initial, ibytes);
+
+    } //ov_open_callbacks
+
+    static function read_callback(cb_id:Int, size:Int, nmemb:Int, data:BytesData):Int {
+
+        trace('read callback cb:$cb_id size:$size nmemb:$nmemb');
+        var info = callbacks.get(cb_id);
+
+        if(info != null) {
+            return info.callbacks.read_fn(info.userdata, size, nmemb, data);
+        }
+
+        //:todo: set by thread errno?
+        return 0;
+
+    } //read_callback
+
+    static function seek_callback(cb_id:Int, offset:Int, whence:OggWhence):Int {
+
+        var info = callbacks.get(cb_id);
+
+        if(info != null && info.callbacks.seek_fn != null) {
+            info.callbacks.seek_fn(info.userdata, offset, whence);
+            return 0;
+        }
+
+        //failure, not seekable
+        return OggCode.OV_FALSE;
+
+    } //seek_callback
+
+    static function close_callback(cb_id:Int):Int {
+
+        var info = callbacks.get(cb_id);
+
+        if(info != null && info.callbacks.close_fn != null) {
+            info.callbacks.close_fn(info.userdata);
+        }
+
+        //not checked by vorbis
+        return 0;
+
+    } //close_callback
+
+    static function tell_callback(cb_id:Int):Int {
+
+        var info = callbacks.get(cb_id);
+
+        if(info != null && info.callbacks.tell_fn != null) {
+            return info.callbacks.tell_fn(info.userdata);
+        }
+
+            //ogg docs don't say for an error code...
+            //only that past the end should return the same as `fseek(file,SEEK_END,0)`
+        return OggCode.OV_FALSE;
+
+    } //tell_callback
+
+
+} //Ogg_helper
+
+private typedef InternalCallbackInfo = {
+    var id:Int;
+    var userdata:Dynamic;
+    var file:OggVorbisFile;
+    var callbacks:OggCallbacks;
+}
 
 //userdata,size,nmemb,data
 typedef OggReadFN = Dynamic->Int->Int->BytesData->Int;
 //userdata,offset,whence
-typedef OggSeekFN = Dynamic->haxe.Int64->OggWhence->Int;
+typedef OggSeekFN = Dynamic->Int->OggWhence->Void;
 //userdata
-typedef OggCloseFN = Dynamic->Int;
+typedef OggCloseFN = Dynamic->Void;
 //userdata
 typedef OggTellFN = Dynamic->Int;
 

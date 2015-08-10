@@ -1,5 +1,11 @@
 
+import haxe.io.BytesData;
 import ogg.Ogg;
+
+import sys.io.File;
+
+
+typedef FileInfo = { file:sys.io.FileInput, id:Int };
 
 class Test {
 
@@ -41,13 +47,81 @@ class Test {
         }
 
         //bytes_read = ov_read(&vf, buffer, 4096,0,2,1,&current_section)
-        var buffer = haxe.io.Bytes.alloc(1024);
-        var bytes_read = Ogg.ov_read(file, buffer.getData(), 1024, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
+        var buffer = haxe.io.Bytes.alloc(128);
+        var bytes_read = Ogg.ov_read(file, buffer.getData(), 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
 
         trace('read: ' + code(bytes_read));
-
+        trace('128 bytes:\n' + str128(buffer));
         trace('clear: ' + code(Ogg.ov_clear(file)));
 
+        test_callbacks();
+
+    }
+
+    static function str128(bytes:haxe.io.Bytes) {
+        var c = Std.int(Math.min(128, bytes.length));
+        var s = '';
+        for( i in 0 ... c ) {
+            s += '0x'+StringTools.hex(bytes.get(i));
+            if(i > 0 && i % 32 == 0) s += '\n'; else
+            if(i < c-1) s += ' ';
+        }
+        return s;
+    }
+
+    static function test_callbacks() {
+
+        trace('test_callbacks');
+
+        var of:OggVorbisFile = Ogg.newOggVorbisFile();
+        var file = sys.io.File.read('sound.ogg', true);
+
+        file.seek(0, sys.io.FileSeek.SeekBegin);
+
+        var res = Ogg.ov_open_callbacks({id:1, file:file}, of, null, 0, {
+            read_fn:oread, seek_fn:oseek, close_fn:oclose, tell_fn:otell
+        });
+
+        trace('ov_open_callbacks ' + code(res));
+
+        trace('about to read a block of 128 bytes');
+
+        var buffer = haxe.io.Bytes.alloc(128);
+        var bytes_read = Ogg.ov_read(of, buffer.getData(), 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
+
+        trace('read: ' + code(bytes_read));
+        trace('128 bytes:\n' + str128(buffer));
+        trace('clear: ' + code(Ogg.ov_clear(of)));
+
+    } //test_callbacks
+
+    static function oread(userdata:FileInfo, size:Int, numberelements:Int, data:BytesData):Int {
+        trace('oread cb:${userdata.id} size:$size, numberelements:$numberelements data length:${data.length}');
+        var b = haxe.io.Bytes.ofData(data);
+        var l = userdata.file.readBytes(b, 0, size*numberelements);
+        trace('   read $l bytes ' + b.get(0));
+        return l;
+    }
+
+    static function oseek(userdata:FileInfo,offset:Int,whence:OggWhence):Void {
+        trace('oseek cb:${userdata.id} offset:$offset whence:$whence');
+        var _w = switch(whence) {
+            case OggWhence.OGG_SEEK_CUR: sys.io.FileSeek.SeekCur;
+            case OggWhence.OGG_SEEK_END: sys.io.FileSeek.SeekEnd;
+            case OggWhence.OGG_SEEK_SET: sys.io.FileSeek.SeekBegin;
+        }
+        userdata.file.seek(offset, _w);
+    }
+
+    static function oclose(userdata:FileInfo):Void {
+        trace('oclose');
+        userdata.file.close();
+        userdata = null;
+    }
+
+    static function otell(userdata:FileInfo):Int {
+        trace('otell');
+        return 0;
     }
 
     static function code(_code:OggCode) : String {

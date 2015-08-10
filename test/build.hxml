@@ -1,10 +1,11 @@
 -main Test.hx
 -cpp cpp/
 -cp ../
--D no-debug
+#-D no-debug
+-debug
 -D no-simplify
 -resource sound.ogg@sound.ogg
--cmd cpp/Test
+-cmd cpp/Test-debug
 
 # pick a target
 

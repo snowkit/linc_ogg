@@ -16,15 +16,15 @@ namespace linc {
             extern OggFile newOggVorbisFile();
             extern Dynamic ov_comment(OggFile vf, int link);
             extern int ov_read(OggFile vf, OggBytesData buffer, int length, int bigendianp, int word, int sgned);
-            extern int ov_open_callbacks(OggBytesData src, OggFile vf, OggBytesData initial, int ibytes, int callback_id);
 
         //internal
 
-            typedef ::cpp::Function < Void() > InternalReadFN;
-            typedef ::cpp::Function < Void() > InternalSeekFN;
-            typedef ::cpp::Function < Void() > InternalCloseFN;
-            typedef ::cpp::Function < Void() > InternalTellFN;
+            typedef ::cpp::Function < int(int,int,int,OggBytesData) > InternalReadFN;
+            typedef ::cpp::Function < int(int,int,int) > InternalSeekFN;
+            typedef ::cpp::Function < int(int) > InternalCloseFN;
+            typedef ::cpp::Function < int(int) > InternalTellFN;
 
+            extern int internal_open_callbacks(int cb_id, OggFile vf, OggBytesData initial, int ibytes);
             extern void init_callbacks(
                 InternalReadFN _read_fn,
                 InternalSeekFN _seek_fn,
