@@ -38,6 +38,8 @@ namespace linc {
 
         int ov_read(OggFile vf, Array<unsigned char> buffer, int length, int bigendianp, int word, int sgned) {
 
+            printf("ov_read bufferlen:%lu length:%d bigendianp:%d word:%d sgned:%d\n", buffer->size(), length, bigendianp, word, sgned);
+
             //:todo: this value isn't returned yet but is only used for higher order sounds (multiple streams)
             int bitstream = -1;
             long _read = ov_read(vf.get_raw(), (char*)&buffer[0], length, bigendianp, word, sgned, &bitstream);
@@ -99,12 +101,17 @@ namespace linc {
 
                 int* cb_id = (int*)userdata;
 
-                Array<char> arr = hx::ArrayBase::__new(0,0);
-                arr->setUnmanagedData(ptr, size);
+                size_t total = size*nmemb;
+
+                ::Array<unsigned char> arr = new Array_obj<unsigned char>(total,total);
 
                 int res = read_fn(*cb_id, (int)size, (int)nmemb, arr);
 
-                printf("%s %d\n", "internal read callback:", *cb_id);
+                printf("internal read cb:%d size:%lu nmemb:%lu total:%lu res:%d\n", *cb_id, size, nmemb, total, res);
+
+                if(res != 0) {
+                    memcpy(ptr, arr->GetBase(), total);
+                }
 
                 arr = null();
 
@@ -117,8 +124,6 @@ namespace linc {
                 int* cb_id = (int*)userdata;
 
                 printf("%s cb_id:%d offset:%lld whence:%d\n", "seek", *cb_id, offset, whence);
-
-                if(seek_fn == null()) printf("%s\n", "why is seek_fn null?");
 
                 return seek_fn(*cb_id, (int)offset, whence);
 

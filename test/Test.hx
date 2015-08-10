@@ -1,4 +1,5 @@
 
+import haxe.io.Bytes;
 import haxe.io.BytesData;
 import ogg.Ogg;
 
@@ -10,6 +11,12 @@ typedef FileInfo = { file:sys.io.FileInput, id:Int };
 class Test {
 
     static function main() {
+
+        // for(i in 0 ... 20) {
+        //     trace('waiting ${20 - i} seconds for debugging...');
+        //     Sys.sleep(1);
+        // }
+
 
         var file:OggVorbisFile = Ogg.newOggVorbisFile();
 
@@ -73,34 +80,53 @@ class Test {
 
         trace('test_callbacks');
 
-        var of:OggVorbisFile = Ogg.newOggVorbisFile();
-        var file = sys.io.File.read('sound.ogg', true);
+        var file:OggVorbisFile = Ogg.newOggVorbisFile();
+        var input = sys.io.File.read('sound.ogg', true);
 
-        file.seek(0, sys.io.FileSeek.SeekBegin);
+        input.seek(0,SeekEnd);
+        var p = input.tell();
+        input.seek(0,SeekBegin);
 
-        var res = Ogg.ov_open_callbacks({id:1, file:file}, of, null, 0, {
+        trace('file size is $p');
+
+        var res = Ogg.ov_open_callbacks({id:1, file:input}, file, null, 0, {
             read_fn:oread, seek_fn:oseek, close_fn:oclose, tell_fn:otell
         });
 
         trace('ov_open_callbacks ' + code(res));
-
         trace('about to read a block of 128 bytes');
 
         var buffer = haxe.io.Bytes.alloc(128);
-        var bytes_read = Ogg.ov_read(of, buffer.getData(), 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
+        var bytes_read = Ogg.ov_read(file, buffer.getData(), 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
 
         trace('read: ' + code(bytes_read));
         trace('128 bytes:\n' + str128(buffer));
-        trace('clear: ' + code(Ogg.ov_clear(of)));
+        trace('clear: ' + code(Ogg.ov_clear(file)));
 
     } //test_callbacks
 
-    static function oread(userdata:FileInfo, size:Int, numberelements:Int, data:BytesData):Int {
-        trace('oread cb:${userdata.id} size:$size, numberelements:$numberelements data length:${data.length}');
+    static function oread(userdata:FileInfo, size:Int, count:Int, data:BytesData):Int {
+
+        trace('oread cb:${userdata.id} size:$size, count:$count data length:${data.length}');
+
         var b = haxe.io.Bytes.ofData(data);
-        var l = userdata.file.readBytes(b, 0, size*numberelements);
-        trace('   read $l bytes ' + b.get(0));
+        var p = userdata.file.tell();
+        var t = size*count;
+        var l = t;
+        for(i in 0 ... t) {
+            try {
+                b.set(i, userdata.file.readByte());
+            } catch(e:Dynamic) {
+                l = i-1;
+            }
+        }
+
+        // var l = userdata.file.readBytes(b, p, t);
+
+        trace('   didread $l bytes from pos:$p for length:${size*count}');
+
         return l;
+
     }
 
     static function oseek(userdata:FileInfo,offset:Int,whence:OggWhence):Void {
@@ -121,7 +147,7 @@ class Test {
 
     static function otell(userdata:FileInfo):Int {
         trace('otell');
-        return 0;
+        return userdata.file.tell();
     }
 
     static function code(_code:OggCode) : String {
