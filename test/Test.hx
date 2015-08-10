@@ -112,18 +112,11 @@ class Test {
         var b = haxe.io.Bytes.ofData(data);
         var p = userdata.file.tell();
         var t = size*count;
-        var l = t;
-        for(i in 0 ... t) {
-            try {
-                b.set(i, userdata.file.readByte());
-            } catch(e:Dynamic) {
-                l = i-1;
-            }
-        }
-
-        // var l = userdata.file.readBytes(b, p, t);
+        var l = userdata.file.readBytes(b, 0, t);
 
         trace('   didread $l bytes from pos:$p for length:${size*count}');
+
+        // trace('128 bytes:\n' + str128(b));
 
         return l;
 
