@@ -152,7 +152,6 @@ private class Ogg_helper {
 
     static function read_callback(cb_id:Int, size:Int, nmemb:Int, data:BytesData):Int {
 
-        trace('read callback cb:$cb_id size:$size nmemb:$nmemb');
         var info = callbacks.get(cb_id);
 
         if(info != null) {

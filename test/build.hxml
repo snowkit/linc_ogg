@@ -4,7 +4,6 @@
 -D no-debug
 -debug
 -D no-simplify
--resource sound.ogg@sound.ogg
 -cmd cpp/Test-debug
 
 # pick a target

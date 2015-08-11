@@ -38,7 +38,7 @@ namespace linc {
 
         int ov_read(OggFile vf, Array<unsigned char> buffer, int length, int bigendianp, int word, int sgned) {
 
-            printf("ov_read bufferlen:%lu length:%d bigendianp:%d word:%d sgned:%d\n", buffer->size(), length, bigendianp, word, sgned);
+            // printf("ov_read bufferlen:%lu length:%d bigendianp:%d word:%d sgned:%d\n", buffer->size(), length, bigendianp, word, sgned);
 
             //:todo: this value isn't returned yet but is only used for higher order sounds (multiple streams)
             int bitstream = -1;
@@ -60,7 +60,6 @@ namespace linc {
             *int_id = cb_id;
 
             if(initial == null()) {
-                printf("%s %d\n", "opening ogg file for callback id", cb_id);
                 return ov_open_callbacks(int_id, vf.get_raw(), NULL, 0, cb);
             } else {
                 return ov_open_callbacks(int_id, vf.get_raw(), (char*)&initial[0], ibytes, cb);
@@ -85,8 +84,8 @@ namespace linc {
 
                 if(inited_callbacks) return;
 
-                printf("%s\n", "inited internal callbacks");
-                printf("has read:%d seek:%d close:%d tell:%d\n", _read_fn!=null(),_seek_fn!=null(),_close_fn!=null(),_tell_fn!=null());
+                // printf("%s\n", "inited internal callbacks");
+                // printf("has read:%d seek:%d close:%d tell:%d\n", _read_fn!=null(),_seek_fn!=null(),_close_fn!=null(),_tell_fn!=null());
 
                 read_fn = _read_fn;
                 seek_fn = _seek_fn;
@@ -107,7 +106,7 @@ namespace linc {
 
                 int res = read_fn(*cb_id, (int)size, (int)nmemb, arr);
 
-                printf("internal read cb:%d size:%lu nmemb:%lu total:%lu res:%d\n", *cb_id, size, nmemb, total, res);
+                // printf("internal read cb:%d size:%lu nmemb:%lu total:%lu res:%d\n", *cb_id, size, nmemb, total, res);
 
                 if(res != 0) {
                     memcpy(ptr, arr->GetBase(), total);
@@ -123,7 +122,7 @@ namespace linc {
 
                 int* cb_id = (int*)userdata;
 
-                printf("%s cb_id:%d offset:%lld whence:%d\n", "seek", *cb_id, offset, whence);
+                // printf("%s cb_id:%d offset:%lld whence:%d\n", "seek", *cb_id, offset, whence);
 
                 return seek_fn(*cb_id, (int)offset, whence);
 
@@ -133,7 +132,7 @@ namespace linc {
 
                 int* cb_id = (int*)userdata;
 
-                printf("%s %d\n", "close", *cb_id);
+                // printf("%s %d\n", "close", *cb_id);
 
                 return close_fn(*cb_id);
 
@@ -143,7 +142,7 @@ namespace linc {
 
                 int* cb_id = (int*)userdata;
 
-                printf("%s %d\n", "tell", *cb_id);
+                // printf("%s %d\n", "tell", *cb_id);
 
                 return tell_fn(*cb_id);
 
