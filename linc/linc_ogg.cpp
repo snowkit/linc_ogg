@@ -96,7 +96,7 @@ namespace linc {
 
             } //init_callbacks
 
-            static size_t ogg_read_func(void* ptr, size_t size, size_t nmemb, void* userdata) {
+            size_t ogg_read_func(void* ptr, size_t size, size_t nmemb, void* userdata) {
 
                 int* cb_id = (int*)userdata;
 
@@ -118,7 +118,7 @@ namespace linc {
 
             } //read_func
 
-            static int ogg_seek_func(void* userdata, ogg_int64_t offset, int whence) {
+            int ogg_seek_func(void* userdata, ogg_int64_t offset, int whence) {
 
                 int* cb_id = (int*)userdata;
 
@@ -128,7 +128,7 @@ namespace linc {
 
             } //seek_func
 
-            static int ogg_close_func(void* userdata) {
+            int ogg_close_func(void* userdata) {
 
                 int* cb_id = (int*)userdata;
 
@@ -138,7 +138,7 @@ namespace linc {
 
             } //close_func
 
-            static long ogg_tell_func(void* userdata) {
+            long ogg_tell_func(void* userdata) {
 
                 int* cb_id = (int*)userdata;
 

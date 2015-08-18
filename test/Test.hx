@@ -5,6 +5,9 @@ import ogg.Ogg;
 
 import sys.io.File;
 
+    #if (!mac && !android && !ios && !linux && !windows)
+        #error "You should define a target, please read and modify build.hxml"
+    #end
 
 //We pass this into the callbacks to store the file input and id
 typedef FileInfo = { file:sys.io.FileInput, id:Int };

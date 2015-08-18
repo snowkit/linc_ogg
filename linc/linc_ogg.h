@@ -1,5 +1,5 @@
-#ifndef _LINC_OGG_IMAGE_H_
-#define _LINC_OGG_IMAGE_H_
+#ifndef _LINC_OGG_H_
+#define _LINC_OGG_H_
 
 #include "ogg/ogg.h"
 #include "vorbis/vorbisfile.h"
@@ -32,13 +32,13 @@ namespace linc {
                 InternalTellFN _tell_fn
             );
 
-            static size_t ogg_read_func(void* ptr, size_t size, size_t nmemb, void* userdata);
-            static int ogg_seek_func(void* userdata, ogg_int64_t offset, int whence);
-            static int ogg_close_func(void* userdata);
-            static long ogg_tell_func(void* userdata);
+            extern size_t ogg_read_func(void* ptr, size_t size, size_t nmemb, void* userdata);
+            extern int ogg_seek_func(void* userdata, ogg_int64_t offset, int whence);
+            extern int ogg_close_func(void* userdata);
+            extern long ogg_tell_func(void* userdata);
 
     } //ogg namespace
 
 } //linc
 
-#endif //_LINC_OGG_IMAGE_H_
+#endif //_LINC_OGG_H_

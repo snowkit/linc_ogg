@@ -10,6 +10,7 @@ import haxe.io.BytesData;
 @:keep
 @:include('linc_ogg.h')
 @:build(linc.Touch.apply())
+@:buildXml("<include name='${haxelib:linc_ogg}/linc/linc_ogg.xml'/>")
 extern class Ogg {
 
     static inline function ov_open_callbacks(userdata:Dynamic, file:OggVorbisFile, initial:BytesData, ibytes:Int, callbacks:OggCallbacks) : Int {
@@ -299,7 +300,3 @@ abstract OggCode(Int) from Int to Int {
     var OV_EBADLINK     = -137;
     var OV_ENOSEEK      = -138;
 }
-
-
-@:buildXml("<include name='${haxelib:linc_ogg}/linc/linc_ogg.xml'/>")
-@:keep private class OggLinc {}
