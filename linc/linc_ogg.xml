@@ -1,7 +1,5 @@
 <xml>
 
-    <set name='LINC_OGG_PATH' value='${haxelib:linc_ogg}'/>
-
     <set name="NATIVE_TOOLKIT_PATH" value="${LINC_OGG_PATH}/lib/" />
     <include name="${LINC_OGG_PATH}/lib/ogg/files.xml"/>
     <include name="${LINC_OGG_PATH}/lib/vorbis/files.xml"/>
