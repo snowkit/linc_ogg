@@ -22,7 +22,7 @@
 
     <target id="haxe">
 
-            <!-- include sdl library code into the build -->
+            <!-- include ogg library code into the build -->
         <files id="native-toolkit-ogg"/>
         <files id="native-toolkit-vorbis"/>
         <files id="native-toolkit-theora"/>
