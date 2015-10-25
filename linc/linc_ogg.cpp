@@ -36,13 +36,13 @@ namespace linc {
 
         } //ov_comment
 
-        int ov_read(OggFile vf, Array<unsigned char> buffer, int length, int bigendianp, int word, int sgned) {
+        int ov_read(OggFile vf, Array<unsigned char> buffer, int byteOffset, int length, int bigendianp, int word, int sgned) {
 
             // printf("ov_read bufferlen:%lu length:%d bigendianp:%d word:%d sgned:%d\n", buffer->size(), length, bigendianp, word, sgned);
 
             //:todo: this value isn't returned yet but is only used for higher order sounds (multiple streams)
             int bitstream = -1;
-            long _read = ov_read(vf.get_raw(), (char*)&buffer[0], length, bigendianp, word, sgned, &bitstream);
+            long _read = ov_read(vf.get_raw(), (char*)&buffer[0] + byteOffset, length, bigendianp, word, sgned, &bitstream);
             return (int)_read;
 
         } //ov_read

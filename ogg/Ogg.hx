@@ -19,7 +19,7 @@ extern class Ogg {
 
     //ret long, ,int *bitstream at the end is left
     @:native('linc::ogg::ov_read')
-    static function ov_read(vf:OggVorbisFile, buffer:BytesData, length:Int, endian:OggEndian, word:OggWord, sgned:OggSigned) : Int;
+    static function ov_read(vf:OggVorbisFile, buffer:BytesData, byteOffset:Int, length:Int, endian:OggEndian, word:OggWord, sgned:OggSigned) : Int;
 
     @:native('linc::ogg::newOggVorbisFile')
     static function newOggVorbisFile() : OggVorbisFile;

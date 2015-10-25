@@ -60,9 +60,8 @@ class Test {
             trace('  ' + c);
         }
 
-        //bytes_read = ov_read(&vf, buffer, 4096,0,2,1,&current_section)
         var buffer = haxe.io.Bytes.alloc(128);
-        var bytes_read = Ogg.ov_read(file, buffer.getData(), 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
+        var bytes_read = Ogg.ov_read(file, buffer.getData(), 0, 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
 
         trace('read: ' + code(bytes_read));
         trace('128 bytes:\n' + str128(buffer));
@@ -90,10 +89,35 @@ class Test {
         });
 
         trace('ov_open_callbacks ' + code(res));
+
+        var info = Ogg.ov_info(file,-1);
+
+        trace('version: '+Std.int(info.version));
+        trace('serial: '+Std.int(Ogg.ov_serialnumber(file,-1)));
+        trace('seekable: '+Std.int(Ogg.ov_seekable(file)));
+        trace('streams: '+Std.int(Ogg.ov_streams(file)));
+        trace('rate: '+Std.int(info.rate));
+        trace('channels: '+Std.int(info.channels));
+
+        trace('pcm: '+Std.string( Ogg.ov_pcm_total(file,-1) ));
+        trace('raw: '+Std.string( Ogg.ov_raw_total(file,-1) ));
+        trace('time: '+Std.string( Ogg.ov_time_total(file,-1) ));
+
+        trace('ov_bitrate: ' + code(Ogg.ov_bitrate(file, -1)));
+        trace('ov_bitrate_instant: ' + code(Ogg.ov_bitrate_instant(file)));
+        trace('bitrate_lower: '+Std.int(info.bitrate_lower));
+        trace('bitrate_nominal: '+Std.int(info.bitrate_nominal));
+        trace('bitrate_upper: '+Std.int(info.bitrate_upper));
+        trace('bitrate_window: '+Std.int(info.bitrate_window));
+
+        trace('pcm tell: '+code( cast Ogg.ov_pcm_tell(file) ));
+        trace('raw tell: '+code( cast Ogg.ov_raw_tell(file) ));
+        trace('time tell: '+code( cast Ogg.ov_time_tell(file) ));
+        
         trace('about to read a block of 128 bytes');
 
         var buffer = haxe.io.Bytes.alloc(128);
-        var bytes_read = Ogg.ov_read(file, buffer.getData(), 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
+        var bytes_read = Ogg.ov_read(file, buffer.getData(), 0, 128, OggEndian.TYPICAL, OggWord.TYPICAL, OggSigned.TYPICAL);
 
         trace('read: ' + code(bytes_read));
         trace('128 bytes:\n' + str128(buffer));
@@ -103,13 +127,13 @@ class Test {
 
 
         //user read function for ogg callbacks
-    static function oread(userdata:FileInfo, size:Int, count:Int, data:BytesData):Int {
+    static function oread(userdata:FileInfo, size:Int, nmemb:Int, data:BytesData):Int {
 
-        var total = size*count;
+        var total = size*nmemb;
         var b = haxe.io.Bytes.ofData(data);
         var read = userdata.file.readBytes(b, 0, total);
 
-        trace('oread cb:${userdata.id} size:$size, count:$count read amount:$read');
+        trace('oread cb:${userdata.id} size:$size, nmemb:$nmemb read amount:$read');
 
         // trace('128 bytes:\n' + str128(b));
         b = null;

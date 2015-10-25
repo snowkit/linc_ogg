@@ -15,7 +15,7 @@ namespace linc {
 
             extern OggFile newOggVorbisFile();
             extern Dynamic ov_comment(OggFile vf, int link);
-            extern int ov_read(OggFile vf, OggBytesData buffer, int length, int bigendianp, int word, int sgned);
+            extern int ov_read(OggFile vf, OggBytesData buffer, int byteOffset, int length, int bigendianp, int word, int sgned);
 
         //internal
 
