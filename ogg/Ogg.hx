@@ -9,8 +9,10 @@ import haxe.io.BytesData;
 
 @:keep
 @:include('linc_ogg.h')
+#if !display
 @:build(linc.Linc.touch())
 @:build(linc.Linc.xml('ogg'))
+#end
 extern class Ogg {
 
     static inline function ov_open_callbacks(userdata:Dynamic, file:OggVorbisFile, initial:BytesData, ibytes:Int, callbacks:OggCallbacks) : Int {
