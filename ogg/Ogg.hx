@@ -147,9 +147,13 @@ private class Ogg_helper {
             );
         }
 
-        callbacks.set(cb_seq, { userdata:userdata, file:file, callbacks:_callbacks, id:++cb_seq });
+        var current_seq = cb_seq;
 
-        return @:privateAccess Ogg.internal_open_callbacks(cb_seq, file, initial, ibytes);
+        callbacks.set(current_seq, { userdata:userdata, file:file, callbacks:_callbacks, id:current_seq });
+
+        ++cb_seq;
+
+        return @:privateAccess Ogg.internal_open_callbacks(current_seq, file, initial, ibytes);
 
     } //ov_open_callbacks
 
