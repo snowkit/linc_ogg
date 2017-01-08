@@ -1,10 +1,9 @@
-#ifndef _LINC_OGG_H_
-#define _LINC_OGG_H_
+#pragma once
+
+#include <hxcpp.h>
 
 #include "ogg/ogg.h"
 #include "vorbis/vorbisfile.h"
-
-#include <hxcpp.h>
 
 namespace linc {
 
@@ -40,5 +39,3 @@ namespace linc {
     } //ogg namespace
 
 } //linc
-
-#endif //_LINC_OGG_H_
