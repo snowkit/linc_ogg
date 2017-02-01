@@ -1,6 +1,8 @@
-#include "./linc_ogg.h"
-
 #include <hxcpp.h>
+
+#include "./linc_ogg.h"
+#include "ogg/ogg.h"
+#include "vorbis/vorbisfile.h"
 
 namespace linc {
 
