@@ -1,4 +1,6 @@
+#ifndef HXCPP_H
 #include <hxcpp.h>
+#endif
 
 #include "./linc_ogg.h"
 #include "ogg/ogg.h"
