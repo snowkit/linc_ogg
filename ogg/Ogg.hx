@@ -214,12 +214,22 @@ private class Ogg_helper {
 
 } //Ogg_helper
 
+#if (haxe_ver >= 3.3)
+@:structInit
+private class InternalCallbackInfo {
+    public var id:Int;
+    public var userdata:Dynamic;
+    public var file:OggVorbisFile;
+    public var callbacks:OggCallbacks;
+}
+#else
 private typedef InternalCallbackInfo = {
     var id:Int;
     var userdata:Dynamic;
     var file:OggVorbisFile;
     var callbacks:OggCallbacks;
 }
+#end
 
 //userdata,size,nmemb,data
 typedef OggReadFN = Dynamic->Int->Int->BytesData->Int;
